@@ -7,7 +7,9 @@ services:
       dockerfile: Dockerfile
     image: nodejs
     container_name: server
-    entrypoint: dockerize -wait tcp://database:3306 -timeout 20s node app.js
+    volumes: 
+      - ./app/src:/app/src
+    entrypoint: dockerize -wait tcp://database:3306 -timeout 20s node ./src/app.js
     depends_on: 
       - db
     ports:

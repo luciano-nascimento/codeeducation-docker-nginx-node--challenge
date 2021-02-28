@@ -1,19 +1,19 @@
-FROM mhart/alpine-node
+FROM node:15
 
+RUN mkdir /app
 WORKDIR /app
 
-COPY ["package.json", "package-lock.json*", "./"]
-COPY ./src/app.js .
+COPY ./app/package*.json ./
 
-RUN apk add --no-cache openssl
-
-ENV DOCKERIZE_VERSION v0.6.1
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-
-RUN npm install --production
+RUN npm install
 
 EXPOSE 3333
 
-CMD [ "node", "app.js" ]
+RUN apt-get update && apt-get install -y wget
+
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+CMD [ "node", "./src/app.js" ]
