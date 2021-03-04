@@ -10,9 +10,27 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+const { uniqueNamesGenerator, starWars } = require('unique-names-generator');
+
 app.get('/:name', async (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   await insertPeople(req.params.name);
+  const allPeople = await getAllPeople();
+  
+  let html = '<h1>Full Cycle Rocks!</h1> - Lista de nomes cadastrada no banco de dados:'
+  html += '<ul>';
+  allPeople.forEach( (people) => {
+    html += '<li>' + people.name + '</li>';
+  });
+  html += '</ul>';
+  res.send(Buffer.from(html));
+})
+
+app.get('/', async (req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  const name = uniqueNamesGenerator({ dictionaries: [starWars] });
+  console.log(name)
+  await insertPeople(name);
   const allPeople = await getAllPeople();
   
   let html = '<h1>Full Cycle Rocks!</h1> - Lista de nomes cadastrada no banco de dados:'
